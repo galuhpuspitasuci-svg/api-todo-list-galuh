@@ -1,4 +1,7 @@
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./config/swagger"); // Memanggil konfigurasi swagger
+
 const todoRoutes = require("./routes/todo.routes");
 const authRoutes = require("./routes/auth.routes");
 const statsRoutes = require("./routes/stats.routes");
@@ -13,6 +16,9 @@ const app = express();
 
 app.use(logger);
 app.use(express.json());
+
+// Mendaftarkan paparan Swagger UI di laluan /api-docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (req, res) => {
   res.json({ message: "Todo API is running" });
