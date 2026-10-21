@@ -8,7 +8,33 @@ module.exports = {
   servers: [
     {
       url: "/",
-      description: "Current Server (Auto Detect / Vercel)",
+      description: "- Current Server (Auto Detect / Vercel)",
+    },
+    {
+      url: "http://localhost:3000",
+      description: "Local development server",
+    },
+  ],
+  tags: [
+    {
+      name: "Auth",
+      description: "Endpoint untuk autentikasi pengguna",
+    },
+    {
+      name: "Categories",
+      description: "Endpoint untuk manajemen kategori",
+    },
+    {
+      name: "Stats",
+      description: "Endpoint untuk statistik sistem",
+    },
+    {
+      name: "Activity Logs",
+      description: "Endpoint untuk log aktivitas",
+    },
+    {
+      name: "Todos",
+      description: "Endpoint untuk manajemen todo",
     },
   ],
   components: {
