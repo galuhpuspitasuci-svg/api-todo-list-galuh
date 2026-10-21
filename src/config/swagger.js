@@ -1,79 +1,184 @@
-const path = require("path");
-const swaggerJSDoc = require("swagger-jsdoc");
- 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Todo List API",
-      version: "1.0.0",
-      description: "Dokumentasi API Todo List",
+module.exports = {
+  openapi: "3.0.0",
+  info: {
+    title: "Todo List API",
+    version: "1.0.0",
+    description: "Dokumentasi API Todo List — dibangun bertahap dari seri artikel backend Node.js",
+  },
+  servers: [
+    {
+      url: "/",
+      description: "Current Server (Auto Detect / Vercel)",
     },
-    tags: [
-      { name: "Auth", description: "Endpoint untuk autentikasi pengguna" },
-      { name: "Todos", description: "Endpoint untuk manajemen todo" },
-      { name: "Stats", description: "Endpoint untuk statistik (API Key)" },
-    ],
-    servers: [
-      { url: "/", description: "Current Server (Auto Detect / Vercel)" },
-      { url: "http://localhost:3000", description: "Local development server" },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-        apiKeyAuth: { type: "apiKey", in: "header", name: "x-api-key" },
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
       },
-      schemas: {
-        Todo: {
-          type: "object",
-          properties: {
-            _id: { type: "string", example: "665f1c2e8b1e2a1a2c3d4e5f" },
-            title: { type: "string", example: "Belajar Swagger" },
-            description: { type: "string", example: "Menulis dokumentasi endpoint todo" },
-            completed: { type: "boolean", example: false },
-            owner: { type: "string", example: "665f1a2b8b1e2a1a2c3d1111" },
-            createdAt: { type: "string", format: "date-time" },
-            updatedAt: { type: "string", format: "date-time" },
-          },
+      apiKeyAuth: {
+        type: "apiKey",
+        in: "header",
+        name: "x-api-key",
+      },
+    },
+    schemas: {
+      Todo: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          completed: { type: "boolean" },
         },
-        TodoResponse: {
-          type: "object",
-          properties: {
-            success: { type: "boolean", example: true },
-            message: { type: "string", example: "Todo created successfully" },
-            data: { $ref: "#/components/schemas/Todo" },
-          },
-        },
-        AuthResponse: {
-          type: "object",
-          properties: {
-            success: { type: "boolean", example: true },
-            message: { type: "string", example: "Login successful" },
-            data: {
-              type: "object",
-              properties: {
-                user: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string", example: "665f1a2b8b1e2a1a2c3d1111" },
-                    name: { type: "string", example: "Budi" },
-                    email: { type: "string", example: "budi@example.com" },
-                    role: { type: "string", example: "user" },
-                  },
-                },
-                token: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
-              },
-            },
-          },
+      },
+      Category: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          description: { type: "string" },
         },
       },
     },
   },
-  apis: [
-    path.join(process.cwd(), "src/routes/auth.routes.js"),
-    path.join(process.cwd(), "src/routes/todo.routes.js"),
-    path.join(process.cwd(), "src/routes/stats.routes.js"),
-  ],
+  paths: {
+    "/api/auth/register": {
+      post: {
+        tags: ["Auth"],
+        summary: "Mendaftarkan user baru",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  email: { type: "string" },
+                  password: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 201: { description: "User berhasil terdaftar" } },
+      },
+    },
+    "/api/auth/login": {
+      post: {
+        tags: ["Auth"],
+        summary: "Login dan mendapatkan JWT token",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  email: { type: "string" },
+                  password: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Login berhasil" } },
+      },
+    },
+    "/api/categories": {
+      get: {
+        tags: ["Categories"],
+        summary: "Mengambil semua kategori",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "Berhasil mengambil kategori" } },
+      },
+      post: {
+        tags: ["Categories"],
+        summary: "Membuat kategori baru",
+        security: [{ bearerAuth: [] }],
+        responses: { 201: { description: "Kategori berhasil dibuat" } },
+      },
+    },
+    "/api/categories/{id}": {
+      put: {
+        tags: ["Categories"],
+        summary: "Mengupdate kategori berdasarkan ID",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: { 200: { description: "Kategori berhasil diupdate" } },
+      },
+      delete: {
+        tags: ["Categories"],
+        summary: "Menghapus kategori berdasarkan ID",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: { 204: { description: "Kategori berhasil dihapus" } },
+      },
+    },
+    "/api/stats/summary": {
+      get: {
+        tags: ["Stats"],
+        summary: "Mengambil ringkasan statistik todo (total, selesai, belum selesai)",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "Berhasil mengambil statistik" } },
+      },
+    },
+    "/api/activity-logs": {
+      get: {
+        tags: ["Activity Logs"],
+        summary: "Mengambil semua riwayat activity log",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "Berhasil mengambil activity log" } },
+      },
+    },
+    "/api/todos": {
+      post: {
+        tags: ["Todos"],
+        summary: "Membuat todo baru (wajib login)",
+        security: [{ bearerAuth: [] }],
+        responses: { 201: { description: "Todo berhasil dibuat" } },
+      },
+      get: {
+        tags: ["Todos"],
+        summary: "Mengambil daftar todo milik user yang sedang login (dengan pagination & search)",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "Berhasil mengambil daftar todo" } },
+      },
+    },
+    "/api/todos/{id}": {
+      get: {
+        tags: ["Todos"],
+        summary: "Mengambil satu todo berdasarkan ID",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: { 200: { description: "Berhasil mengambil todo" } },
+      },
+      put: {
+        tags: ["Todos"],
+        summary: "Mengupdate todo berdasarkan ID",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: { 200: { description: "Todo berhasil diupdate" } },
+      },
+      delete: {
+        tags: ["Todos"],
+        summary: "Menghapus todo berdasarkan ID",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "id", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: { 204: { description: "Todo berhasil dihapus" } },
+      },
+    },
+  },
 };
- 
-module.exports = swaggerJSDoc(options);
