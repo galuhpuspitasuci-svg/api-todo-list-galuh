@@ -10,10 +10,6 @@ module.exports = {
       url: "/",
       description: "- Current Server (Auto Detect / Vercel)",
     },
-    {
-      url: "http://localhost:3000",
-      description: "Local development server",
-    },
   ],
   tags: [
     {
