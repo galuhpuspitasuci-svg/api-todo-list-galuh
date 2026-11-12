@@ -50,17 +50,19 @@ module.exports = {
       Todo: {
         type: "object",
         properties: {
-          id: { type: "string" },
-          title: { type: "string" },
-          completed: { type: "boolean" },
+          id: { type: "string", example: "64a7f2c1b92a3c0012345678" },
+          title: { type: "string", example: "Belajar Backend Node.js" },
+          description: { type: "string", example: "Menyelesaikan project API Todo List" },
+          completed: { type: "boolean", example: false },
+          category: { type: "string", example: "Pelajaran" },
         },
       },
       Category: {
         type: "object",
         properties: {
-          id: { type: "string" },
-          name: { type: "string" },
-          description: { type: "string" },
+          id: { type: "string", example: "64a7f2c1b92a3c0087654321" },
+          name: { type: "string", example: "Pelajaran" },
+          description: { type: "string", example: "Kategori untuk tugas sekolah dan coding" },
         },
       },
     },
@@ -77,9 +79,9 @@ module.exports = {
               schema: {
                 type: "object",
                 properties: {
-                  name: { type: "string" },
-                  email: { type: "string" },
-                  password: { type: "string" },
+                  name: { type: "string", example: "Budi" },
+                  email: { type: "string", example: "budi@gmail.com" },
+                  password: { type: "string", example: "rahasia123" },
                 },
               },
             },
@@ -99,8 +101,8 @@ module.exports = {
               schema: {
                 type: "object",
                 properties: {
-                  email: { type: "string" },
-                  password: { type: "string" },
+                  email: { type: "string", example: "budi@gmail.com" },
+                  password: { type: "string", example: "rahasia123" },
                 },
               },
             },
@@ -120,6 +122,20 @@ module.exports = {
         tags: ["Categories"],
         summary: "Membuat kategori baru",
         security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "Pelajaran" },
+                  description: { type: "string", example: "Tugas-tugas sekolah" },
+                },
+              },
+            },
+          },
+        },
         responses: { 201: { description: "Kategori berhasil dibuat" } },
       },
     },
@@ -129,8 +145,22 @@ module.exports = {
         summary: "Mengupdate kategori berdasarkan ID",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          { name: "id", in: "path", required: true, schema: { type: "string", example: "64a7f2c1b92a3c0087654321" } },
         ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "Pelajaran Update" },
+                  description: { type: "string", example: "Update deskripsi kategori" },
+                },
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Kategori berhasil diupdate" } },
       },
       delete: {
@@ -138,7 +168,7 @@ module.exports = {
         summary: "Menghapus kategori berdasarkan ID",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          { name: "id", in: "path", required: true, schema: { type: "string", example: "64a7f2c1b92a3c0087654321" } },
         ],
         responses: { 204: { description: "Kategori berhasil dihapus" } },
       },
@@ -164,12 +194,33 @@ module.exports = {
         tags: ["Todos"],
         summary: "Membuat todo baru (wajib login)",
         security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  title: { type: "string", example: "Belajar Express.js" },
+                  description: { type: "string", example: "Membuat REST API Todo List" },
+                  category: { type: "string", example: "Pelajaran" },
+                  completed: { type: "boolean", example: false },
+                },
+              },
+            },
+          },
+        },
         responses: { 201: { description: "Todo berhasil dibuat" } },
       },
       get: {
         tags: ["Todos"],
         summary: "Mengambil daftar todo milik user yang sedang login (dengan pagination & search)",
         security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "search", in: "query", required: false, schema: { type: "string", example: "Belajar" } },
+          { name: "page", in: "query", required: false, schema: { type: "integer", example: 1 } },
+          { name: "limit", in: "query", required: false, schema: { type: "integer", example: 10 } },
+        ],
         responses: { 200: { description: "Berhasil mengambil daftar todo" } },
       },
     },
@@ -179,7 +230,7 @@ module.exports = {
         summary: "Mengambil satu todo berdasarkan ID",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          { name: "id", in: "path", required: true, schema: { type: "string", example: "64a7f2c1b92a3c0012345678" } },
         ],
         responses: { 200: { description: "Berhasil mengambil todo" } },
       },
@@ -188,8 +239,24 @@ module.exports = {
         summary: "Mengupdate todo berdasarkan ID",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          { name: "id", in: "path", required: true, schema: { type: "string", example: "64a7f2c1b92a3c0012345678" } },
         ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  title: { type: "string", example: "Belajar Express.js Lanjutan" },
+                  description: { type: "string", example: "Menyelesaikan revisi mentor" },
+                  category: { type: "string", example: "Pelajaran" },
+                  completed: { type: "boolean", example: true },
+                },
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Todo berhasil diupdate" } },
       },
       delete: {
@@ -197,7 +264,7 @@ module.exports = {
         summary: "Menghapus todo berdasarkan ID",
         security: [{ bearerAuth: [] }],
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string" } },
+          { name: "id", in: "path", required: true, schema: { type: "string", example: "64a7f2c1b92a3c0012345678" } },
         ],
         responses: { 204: { description: "Todo berhasil dihapus" } },
       },
